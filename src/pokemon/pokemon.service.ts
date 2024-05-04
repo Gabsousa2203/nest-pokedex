@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokemonService {
@@ -13,7 +14,9 @@ export class PokemonService {
   //*Debido a que Model no es injectable debemos agregarle un decorador 
   constructor(
     @InjectModel( Pokemon.name ) //! Para que se puedan inyectar modelos de mongoose
-    private readonly pokemonModel: Model<Pokemon>
+    private readonly pokemonModel: Model<Pokemon>,
+
+    private readonly configService: ConfigService
   ){}
   
   async create(createPokemonDto: CreatePokemonDto) {//* Se coloca async porque las inserciones a la BD son asincronas
