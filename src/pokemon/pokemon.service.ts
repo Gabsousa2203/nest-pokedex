@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
@@ -25,29 +26,29 @@ export class PokemonService {
     }catch (error){
       this.handleExceptions( error );
     }
-   
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  findAll( paginationDto: PaginationDto) {
+
+    const { limit = 10, offset = 0} = paginationDto; //* Se desestructura por si nno llega ningun valor y se coloca dde manera local 
+
+    return this.pokemonModel.find()
+      .limit( limit ) //* Este especifica cuanto se muestra
+      .skip( offset ) //* este especifica desde donde comienza
+      .sort({ //* Esto ordena las columnas de namera ascendente
+        no: 1
+      })
+      .select('-__v')
   }
 
   async findOne(term: string) {
     let pokemon: Pokemon;
-
     if( !isNaN(+term) ) {pokemon = await this.pokemonModel.findOne({ no: term })}
-    
     //MongoID
-    if( !pokemon && isValidObjectId( term ) ) {
-      pokemon = await this.pokemonModel.findById( term );
-    }
-
+    if( !pokemon && isValidObjectId( term ) ) { pokemon = await this.pokemonModel.findById( term ); }
     //Name
-    if( !pokemon ){
-      pokemon = await this.pokemonModel.findOne({ name: term.toLowerCase().trim() });
-    }
-
-
+    if( !pokemon ){ pokemon = await this.pokemonModel.findOne({ name: term.toLowerCase().trim() }); }
+    
     if( !pokemon ) throw new NotFoundException( `Pokemon with id, name or no '${ term }' not found` );
 
     return pokemon;

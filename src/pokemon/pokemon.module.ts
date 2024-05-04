@@ -13,7 +13,8 @@ import { Pokemon, PokemonSchema } from './entities/pokemon.entity';
         name: Pokemon.name, //! IMPORTANTE No es el atributo "name", ese sale de la extension del documento en entitie
         schema: PokemonSchema,  //! Es la constante que se creo en entitie
       }
-    ])
-  ]
+    ]),
+  ],
+  exports: [MongooseModule]
 })
 export class PokemonModule {}
